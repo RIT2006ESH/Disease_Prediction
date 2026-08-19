@@ -10,7 +10,7 @@ import numpy as np
 import shap
 import matplotlib.pyplot as plt
 
-MODELS_DIR = Path(__file__).resolve().parents[3] / "models"
+MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
 
 
 def load_production_artifacts(disease_name: str):
@@ -87,7 +87,7 @@ def plot_global_shap_summary(disease_name: str, X_background):
     feature_names = preprocessor.get_feature_names_out()
     shap.summary_plot(shap_values, X_transformed, feature_names=feature_names, show=False)
 
-    out_path = Path(__file__).resolve().parents[3] / "experiments" / f"{disease_name}_shap_summary.png"
+    out_path = Path(__file__).resolve().parents[2] / "experiments" / f"{disease_name}_shap_summary.png"
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"Saved {out_path}")

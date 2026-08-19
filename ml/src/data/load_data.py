@@ -6,7 +6,7 @@ No cleaning logic
 from pathlib import Path
 import pandas as pd
 
-RAW_DIR = Path(__file__).resolve().parents[3] / "data" / "raw"
+RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
 
 # ---------------------------------------------------------------------------
 # Diabetes dataset (Kaggle: iammustafatz/diabetes-prediction-dataset)

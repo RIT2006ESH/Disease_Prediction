@@ -64,10 +64,14 @@ def get_cardio_pipeline() -> ColumnTransformer:
         ("onehot", OneHotEncoder(handle_unknown="ignore")),
     ])
 
+    binary_pipeline = Pipeline([
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+    ])
+
     preprocessor = ColumnTransformer([
         ("num", numeric_pipeline, CARDIO_NUMERIC),
         ("cat", categorical_pipeline, CARDIO_CATEGORICAL),
-        ("bin", "passthrough", CARDIO_BINARY),
+        ("bin", binary_pipeline, CARDIO_BINARY),
     ])
     return preprocessor
 

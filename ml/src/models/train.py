@@ -15,7 +15,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
-from sklearn.model_selection import StratifiedKFold, GridSearchCV
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, train_test_split
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     roc_auc_score, average_precision_score, confusion_matrix,
@@ -23,7 +23,8 @@ from sklearn.metrics import (
 from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.over_sampling import SMOTE
 
-MODELS_DIR = Path(__file__).resolve().parents[3] / "models"
+MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
+MAX_SVM_SAMPLES = 10000  # kernel SVM doesn't scale past ~10-20k rows
 
 MODEL_GRID = {
     "logistic_regression": (
@@ -65,10 +66,6 @@ def train_all_models(
     X_train, y_train, X_test, y_test,
     preprocessor, disease_name: str,
 ) -> dict:
-    """
-    Trains all 5 model types with SMOTE + GridSearchCV, evaluates on held-out
-    test set, saves each best model, and returns a metrics summary dict.
-    """
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     results = {}
 
@@ -78,21 +75,26 @@ def train_all_models(
     for name, (estimator, param_grid) in MODEL_GRID.items():
         print(f"\n[{disease_name}] Training {name}...")
 
-        # SMOTE is INSIDE the pipeline: applied only to training folds
-        # during CV, never to validation/test folds. Prevents leakage
-        # and prevents synthetic samples from inflating test metrics.
+        if name == "svm" and len(X_train) > MAX_SVM_SAMPLES:
+            X_train_use, _, y_train_use, _ = train_test_split(
+                X_train, y_train, train_size=MAX_SVM_SAMPLES,
+                stratify=y_train, random_state=42,
+            )
+        else:
+            X_train_use, y_train_use = X_train, y_train
+
         pipeline = ImbPipeline([
             ("preprocessor", preprocessor),
             ("smote", SMOTE(random_state=42)),
             ("clf", estimator),
         ])
 
+        n_jobs = 1 if name == "svm" else -1
         grid = GridSearchCV(
             pipeline, param_grid, cv=cv,
-            scoring="f1",  # F1 chosen over accuracy given class imbalance
-            n_jobs=-1, verbose=0,
+            scoring="f1", n_jobs=n_jobs, verbose=1,
         )
-        grid.fit(X_train, y_train)
+        grid.fit(X_train_use, y_train_use)
 
         best_model = grid.best_estimator_
         y_pred = best_model.predict(X_test)
@@ -106,7 +108,6 @@ def train_all_models(
         print(f"  Best params: {grid.best_params_}")
         print(f"  F1={metrics['f1']:.3f}  ROC-AUC={metrics['roc_auc']:.3f}  PR-AUC={metrics['pr_auc']:.3f}")
 
-    # Save comparison metrics for the report / registry.py to consume
     with open(disease_dir / "metrics_comparison.json", "w") as f:
         json.dump(results, f, indent=2)
 

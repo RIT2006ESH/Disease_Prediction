@@ -12,7 +12,7 @@ import json
 import shutil
 from pathlib import Path
 
-MODELS_DIR = Path(__file__).resolve().parents[3] / "models"
+MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
 
 # Primary metric used to rank models. F1 chosen for consistency with
 # training-time model selection (see train.py) — both stages optimize

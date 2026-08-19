@@ -14,8 +14,8 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay, RocCurveDisplay, PrecisionRecallDisplay,
 )
 
-MODELS_DIR = Path(__file__).resolve().parents[3] / "models"
-REPORTS_DIR = Path(__file__).resolve().parents[3] / "experiments"
+MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
+REPORTS_DIR = Path(__file__).resolve().parents[2] / "experiments"
 
 
 def plot_confusion_matrices(disease_name: str, X_test, y_test):
