@@ -45,6 +45,12 @@ def is_ready() -> bool:
     return "diabetes" in _models and "cardio" in _models
 
 
+def get_model(disease: str):
+    if disease not in _models:
+        raise RuntimeError(f"Model for '{disease}' is not loaded")
+    return _models[disease]
+
+
 def _get_model_version(disease: str) -> str:
     manifest = _manifests.get(disease, {})
     model_name = manifest.get("selected_model", "unknown")

@@ -17,13 +17,14 @@ class CardioPredictionRequest(BaseModel):
     oldpeak: float = Field(..., ge=0, le=10, description="ST depression induced by exercise")
     slope: Literal[0, 1, 2]  # slope of peak exercise ST segment
     ca: Literal[0, 1, 2, 3]  # number of major vessels colored by fluoroscopy
+    thal: Literal[3, 6, 7]  # 3=normal, 6=fixed defect, 7=reversible defect
 
     class Config:
         json_schema_extra = {
             "example": {
                 "age": 55, "sex": 1, "cp": 2, "trestbps": 130, "chol": 246,
                 "fbs": 0, "restecg": 1, "thalach": 150, "exang": 0,
-                "oldpeak": 1.2, "slope": 1, "ca": 0,
+                "oldpeak": 1.2, "slope": 1, "ca": 0, "thal": 3,
             }
         }
 
