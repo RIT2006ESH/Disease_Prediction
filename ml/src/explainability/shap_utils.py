@@ -1,7 +1,7 @@
 """
 SHAP explainability utilities.
-Used both offline (generating report visuals) and at inference time
-(the FastAPI backend calls explain_single_prediction for each request).
+Used both offline (generating report visuals) and, via the same
+normalization logic mirrored in the backend, at inference time.
 """
 
 from pathlib import Path
@@ -36,35 +36,42 @@ def _get_explainer(pipeline, X_background):
     if tree_based:
         explainer = shap.TreeExplainer(clf)
     else:
-        # KernelExplainer needs a small representative background sample,
-        # not the full training set, to stay computationally feasible.
         background_sample = shap.sample(X_background_transformed, 100)
         explainer = shap.KernelExplainer(clf.predict_proba, background_sample)
 
     return explainer, preprocessor
 
 
+def _normalize_shap_values(shap_values):
+    """
+    SHAP's return shape varies across versions and explainer types:
+      - list of arrays (one per class)              -> take class 1 (positive class)
+      - 3D array (n_samples, n_features, n_classes)  -> take class 1
+      - 2D array (n_samples, n_features)             -> already single-output, use as-is
+    """
+    if isinstance(shap_values, list):
+        return shap_values[1]
+
+    shap_values = np.asarray(shap_values)
+    if shap_values.ndim == 3:
+        return shap_values[:, :, 1]
+    return shap_values
+
+
 def explain_single_prediction(disease_name: str, X_background, single_input_df) -> dict:
     """
-    Returns top contributing features for a single prediction — this is
-    what the FastAPI /predict endpoint calls to populate the
-    'important contributing features' field in the response.
+    Returns top contributing features for a single prediction.
     """
     pipeline = load_production_artifacts(disease_name)
     explainer, preprocessor = _get_explainer(pipeline, X_background)
 
     X_transformed = preprocessor.transform(single_input_df)
-    shap_values = explainer.shap_values(X_transformed)
-
-    # For binary classifiers, shap_values may be a list [class_0, class_1]
-    if isinstance(shap_values, list):
-        shap_values = shap_values[1]
+    raw_shap_values = explainer.shap_values(X_transformed)
+    shap_values = _normalize_shap_values(raw_shap_values)
 
     feature_names = preprocessor.get_feature_names_out()
     contributions = dict(zip(feature_names, shap_values[0]))
 
-    # Sort by absolute impact, return top 5 — keeps the API response
-    # focused and clinically readable rather than dumping every feature
     top_features = sorted(contributions.items(), key=lambda kv: abs(kv[1]), reverse=True)[:5]
 
     return {
@@ -80,9 +87,8 @@ def plot_global_shap_summary(disease_name: str, X_background):
     explainer, preprocessor = _get_explainer(pipeline, X_background)
 
     X_transformed = preprocessor.transform(X_background)
-    shap_values = explainer.shap_values(X_transformed)
-    if isinstance(shap_values, list):
-        shap_values = shap_values[1]
+    raw_shap_values = explainer.shap_values(X_transformed)
+    shap_values = _normalize_shap_values(raw_shap_values)
 
     feature_names = preprocessor.get_feature_names_out()
     shap.summary_plot(shap_values, X_transformed, feature_names=feature_names, show=False)
