@@ -11,31 +11,31 @@ export default function ResultDisplay({ result }: Props) {
   const barColor = isHighRisk ? "bg-alert" : "bg-signal";
 
   return (
-    <div className="card mt-8">
+    <div className="card mt-8 overflow-hidden">
       <div className="border-b border-line px-6 py-4 flex items-center justify-between">
-        <p className="eyebrow">Result</p>
-        <span className={`font-mono text-xs uppercase tracking-widest px-2 py-1 border ${
-          isHighRisk ? "border-alert text-alert" : "border-signal text-signal"
+        <h3 className="text-base font-semibold">Prediction Result</h3>
+        <span className={`text-sm font-medium px-3 py-1 rounded-full ${
+          isHighRisk ? "bg-alert/10 text-alert" : "bg-signal/10 text-signal"
         }`}>
           {result.risk_label}
         </span>
       </div>
 
-      <div className="px-6 py-6">
-        <div className="flex items-baseline gap-2 mb-2">
-          <span className={`font-mono text-4xl font-bold ${riskColor}`}>{probabilityPct}%</span>
-          <span className="text-xs text-ink/50 font-mono uppercase tracking-wide">probability</span>
+      <div className="px-6 py-5">
+        <div className="flex justify-between items-baseline mb-1.5">
+          <span className="text-sm text-ink/60">Risk Probability</span>
+          <span className={`text-lg font-semibold ${riskColor}`}>{probabilityPct}%</span>
         </div>
-        <div className="w-full h-1.5 bg-line mb-6">
-          <div className={`h-1.5 ${barColor}`} style={{ width: `${probabilityPct}%` }} />
+        <div className="w-full h-2 bg-line rounded-full mb-6">
+          <div className={`h-2 rounded-full ${barColor}`} style={{ width: `${probabilityPct}%` }} />
         </div>
 
-        <p className="eyebrow mb-3">Contributing Factors</p>
-        <ul className="divide-y divide-line border-y border-line mb-6">
+        <h4 className="text-sm font-semibold text-ink/80 mb-2">Top Contributing Factors</h4>
+        <ul className="divide-y divide-line mb-5">
           {result.top_features.map((f) => (
             <li key={f.feature} className="flex justify-between py-2 text-sm">
               <span className="text-ink/70">{f.feature.replace(/^(num|cat|bin)__/, "")}</span>
-              <span className={`font-mono ${f.impact >= 0 ? "text-alert" : "text-signal"}`}>
+              <span className={f.impact >= 0 ? "text-alert" : "text-signal"}>
                 {f.impact >= 0 ? "+" : ""}
                 {f.impact.toFixed(3)}
               </span>
@@ -43,8 +43,10 @@ export default function ResultDisplay({ result }: Props) {
           ))}
         </ul>
 
-        <p className="text-xs text-ink/50 leading-relaxed">{result.disclaimer}</p>
-        <p className="text-xs text-ink/30 font-mono mt-2">model · {result.model_version}</p>
+        <p className="text-xs text-ink/50 leading-relaxed border-t border-line pt-3">
+          {result.disclaimer}
+        </p>
+        <p className="text-xs text-ink/30 mt-1.5">Model: {result.model_version}</p>
       </div>
     </div>
   );

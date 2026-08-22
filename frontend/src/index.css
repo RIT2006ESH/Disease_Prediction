@@ -8,22 +8,22 @@ body {
 
 @layer components {
   .field-label {
-    @apply block text-xs font-mono uppercase tracking-wider text-ink/60 mb-1.5;
+    @apply block text-sm font-medium text-ink/70 mb-1.5;
   }
   .field-input {
-    @apply w-full border border-line bg-white rounded-none px-3 py-2 text-sm
+    @apply w-full border border-line bg-white rounded-md px-3 py-2 text-sm
            focus:outline-none focus:border-clinical focus:ring-1 focus:ring-clinical
            transition-colors;
   }
   .card {
-    @apply bg-white border border-line;
+    @apply bg-white border border-line rounded-lg;
   }
   .eyebrow {
-    @apply font-mono text-xs uppercase tracking-widest text-clinical;
+    @apply text-xs font-semibold uppercase tracking-wide text-clinical;
   }
   .btn-primary {
-    @apply w-full bg-ink text-paper font-mono text-sm uppercase tracking-wider py-3
-           hover:bg-clinical transition-colors disabled:opacity-40 disabled:hover:bg-ink;
+    @apply w-full bg-clinical text-white font-medium rounded-md py-2.5
+           hover:bg-clinical/90 transition-colors disabled:opacity-40;
   }
 }
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { predictCardio } from "../api/client";
 import type { CardioFormData, PredictionResponse } from "../types/prediction";
 import ResultDisplay from "../components/ResultDisplay";
+import PulseLine from "../components/PulseLine";
 
 const initialForm: CardioFormData = {
   age: 50,
@@ -46,24 +47,25 @@ export default function CardioForm() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6">Cardiovascular Risk Assessment</h2>
+    <div className="max-w-xl mx-auto px-6 py-16">
+      <p className="eyebrow mb-2">Screening · Cardiovascular</p>
+      <h2 className="font-mono text-2xl font-bold mb-8">Cardiovascular Risk Assessment</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm border">
+      <form onSubmit={handleSubmit} className="space-y-5 card p-8">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Age</label>
+            <label className="field-label">Age</label>
             <input
               type="number"
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.age}
               onChange={(e) => handleChange("age", Number(e.target.value))}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Sex</label>
+            <label className="field-label">Sex</label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.sex}
               onChange={(e) => handleChange("sex", Number(e.target.value))}
             >
@@ -74,9 +76,9 @@ export default function CardioForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Chest Pain Type</label>
+          <label className="field-label">Chest Pain Type</label>
           <select
-            className="w-full border rounded px-3 py-2"
+            className="field-input"
             value={form.cp}
             onChange={(e) => handleChange("cp", Number(e.target.value))}
           >
@@ -89,19 +91,19 @@ export default function CardioForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Resting BP (mm Hg)</label>
+            <label className="field-label">Resting BP (mm Hg)</label>
             <input
               type="number"
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.trestbps}
               onChange={(e) => handleChange("trestbps", Number(e.target.value))}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Cholesterol (mg/dl)</label>
+            <label className="field-label">Cholesterol (mg/dl)</label>
             <input
               type="number"
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.chol}
               onChange={(e) => handleChange("chol", Number(e.target.value))}
             />
@@ -110,9 +112,9 @@ export default function CardioForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Fasting Blood Sugar &gt;120</label>
+            <label className="field-label">Fasting Blood Sugar &gt;120</label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.fbs}
               onChange={(e) => handleChange("fbs", Number(e.target.value))}
             >
@@ -121,9 +123,9 @@ export default function CardioForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Resting ECG</label>
+            <label className="field-label">Resting ECG</label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.restecg}
               onChange={(e) => handleChange("restecg", Number(e.target.value))}
             >
@@ -135,10 +137,10 @@ export default function CardioForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Max Heart Rate Achieved</label>
+          <label className="field-label">Max Heart Rate Achieved</label>
           <input
             type="number"
-            className="w-full border rounded px-3 py-2"
+            className="field-input"
             value={form.thalach}
             onChange={(e) => handleChange("thalach", Number(e.target.value))}
           />
@@ -146,9 +148,9 @@ export default function CardioForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Exercise-Induced Angina</label>
+            <label className="field-label">Exercise-Induced Angina</label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.exang}
               onChange={(e) => handleChange("exang", Number(e.target.value))}
             >
@@ -157,11 +159,11 @@ export default function CardioForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">ST Depression (oldpeak)</label>
+            <label className="field-label">ST Depression (oldpeak)</label>
             <input
               type="number"
               step="0.1"
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.oldpeak}
               onChange={(e) => handleChange("oldpeak", Number(e.target.value))}
             />
@@ -170,9 +172,9 @@ export default function CardioForm() {
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">ST Slope</label>
+            <label className="field-label">ST Slope</label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.slope}
               onChange={(e) => handleChange("slope", Number(e.target.value))}
             >
@@ -182,9 +184,9 @@ export default function CardioForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Major Vessels</label>
+            <label className="field-label">Major Vessels</label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.ca}
               onChange={(e) => handleChange("ca", Number(e.target.value))}
             >
@@ -195,9 +197,9 @@ export default function CardioForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Thalassemia</label>
+            <label className="field-label">Thalassemia</label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="field-input"
               value={form.thal}
               onChange={(e) => handleChange("thal", Number(e.target.value))}
             >
@@ -208,16 +210,13 @@ export default function CardioForm() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-        >
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Predicting..." : "Predict Cardiovascular Risk"}
         </button>
       </form>
 
-      {error && <p className="text-red-600 mt-4">{error}</p>}
+      {loading && <PulseLine className="w-full h-8 mt-6" />}
+      {error && <p className="text-alert text-sm font-mono mt-4">{error}</p>}
       {result && <ResultDisplay result={result} />}
     </div>
   );
