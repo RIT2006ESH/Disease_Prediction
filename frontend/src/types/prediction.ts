@@ -37,3 +37,10 @@ export interface CardioFormData {
   ca: 0 | 1 | 2 | 3;
   thal: 3 | 6 | 7;
 }
+export interface XrayPredictionResponse {
+  risk_label: "Low Risk" | "High Risk" | "Invalid Input";
+  probability: number;
+  model_version: string;
+  valid_input: boolean;
+  disclaimer: string;
+}

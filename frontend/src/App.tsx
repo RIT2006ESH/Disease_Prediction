@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-do
 import Home from "./pages/Home";
 import DiabetesForm from "./pages/DiabetesForm";
 import CardioForm from "./pages/CardioForm";
+import XrayForm from "./pages/XrayForm";
 
 function Nav() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function Nav() {
           <Link to="/" className={linkClass("/")}>Home</Link>
           <Link to="/diabetes" className={linkClass("/diabetes")}>Diabetes</Link>
           <Link to="/cardio" className={linkClass("/cardio")}>Cardiovascular</Link>
+          <Link to="/xray" className={linkClass("/xray")}>X-Ray</Link>
         </div>
       </div>
     </nav>
@@ -38,6 +40,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/diabetes" element={<DiabetesForm />} />
         <Route path="/cardio" element={<CardioForm />} />
+        <Route path="/xray" element={<XrayForm />} />
       </Routes>
     </BrowserRouter>
   );
