@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1.router import api_router
 from app.services.prediction_service import load_models
+from app.services.xray_service import load_xray_model
 from app.db.session import Base, engine
 from app.db import models  # noqa: F401 — import needed so SQLAlchemy registers the Prediction table
 
@@ -18,7 +19,7 @@ async def lifespan(app: FastAPI):
 
     print("Loading ML models...")
     load_models()
-
+    load_xray_model()
     yield
 
     print("Shutting down.")
