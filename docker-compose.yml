@@ -1,18 +1,44 @@
-version: "3.9"
-
 services:
   db:
     image: mysql:8.0
     container_name: disease-risk-db
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: disease_risk_db
+      MYSQL_DATABASE: disease_prediction
       MYSQL_USER: appuser
       MYSQL_PASSWORD: apppass
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysqldata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: disease-risk-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql+pymysql://appuser:apppass@db:3306/disease_prediction
+      ML_DIR: /app/ml
+      ML_MODELS_DIR: /app/ml/models
+    volumes:
+      - ./ml:/app/ml:ro
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: disease-risk-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
 
 volumes:
   mysqldata:
