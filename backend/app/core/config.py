@@ -1,9 +1,13 @@
+import os
 import sys
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
 
-sys.path.append(str(Path(__file__).resolve().parents[3] / "ml"))
+# In Docker, ML_DIR is set via environment variable and points to a mounted
+# volume. Locally, it falls back to the relative path on disk.
+ML_DIR = os.environ.get("ML_DIR", str(Path(__file__).resolve().parents[3] / "ml"))
+sys.path.append(ML_DIR)
 
 
 class Settings(BaseSettings):
@@ -12,7 +16,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "mysql+pymysql://appuser:apppass@localhost:3306/disease_prediction"
 
-    ML_MODELS_DIR: Path = Path(__file__).resolve().parents[3] / "ml" / "models"
+    ML_MODELS_DIR: Path = Path(ML_DIR) / "models"
 
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
