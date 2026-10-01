@@ -15,3 +15,7 @@ shap==0.45.0
 matplotlib==3.8.4
 pillow==10.4.0
 numpy<2
+torch
+torchvision
+
+
